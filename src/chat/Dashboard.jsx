@@ -11,6 +11,8 @@ export const Dashboard = () => {
     const [getMessage, setGetMessage] = useState(null);
     const [editInfo, setEditInfo] = useState(null);
     const [newMessage, setNewMessage] = useState("");
+    const [replyInfo, setReplyInfo] = useState(null);
+    const [replyMessage, setReplyMessage] = useState("")
 
 
     const [loading, setLoading] = useState(false);
@@ -72,6 +74,36 @@ export const Dashboard = () => {
             // setLoading(false);
             return;
         }
+    };
+
+
+    const handleReply=(id)=>{
+        setReplyInfo(id)
+    };
+
+
+    const saveReplyMessage = async(id, user_id, name, reply_old_msg)=>{
+        try{
+            const response = await axios.post(`http://127.0.0.1:4000/api/messages/reply/${id}`, {user_id, name, reply_old_msg, replyMessage} )
+
+            fetchData();
+            bottom.current?.scrollIntoView();
+            setReplyInfo(null);
+            // alert(response.data.message)
+        }catch(error){
+            let err = "Error connecting to the server!";
+
+            if(error.response?.data?.error){
+                alert(error.response?.data?.error)
+                // setLoading(false);
+                return;
+            }
+
+            alert(err);
+            // setLoading(false);
+            return;
+        }
+
     }
 
 
@@ -128,16 +160,22 @@ export const Dashboard = () => {
              <button onClick={logout} className="btn btn-danger">Logout</button>
         </div>
             <div className="rounded rounded-4"  style={{boxShadow:"0 0 50px 10px grey", height:"400px", overflowY:"auto", padding:"0 10px 60px 10px"}}>
-                 {getMessage?.map((msg, key) => (
-                <div  key={key} className={`d-flex ${user?.name === msg.name ? "justify-content-end":"justify-content-start"}`}>
-                    <div className={`text-white p-2 mt-2 border rounded-4 ${user?.name === msg.name ? "bg-primary":"bg-secondary"}`}>
-                        {msg.name  == user?.name ? <b>You</b>:<b >{msg.name}</b>}:{msg.message}       
-                        {user?.name === msg.name ? (
+                 {getMessage?.map((msg, key) => {
+                    const replyId = getMessage.find(m => m.id === msg.reply_msg_id);
+                return(
+                    <div  key={key} className={`d-flex ${user?.id === msg.user_id ? "justify-content-end":"justify-content-start"}`}>
+                    <div className={`text-white p-2 mt-2 border rounded-4 ${user?.id === msg.user_id ? "bg-primary":"bg-secondary"}`}>
+                        {replyId && (<div><i>{msg.name} : {msg.reply_old_msg}</i></div>)}
+                        {msg.user_id  == user?.id ? <b>You</b> : <b >{msg.name}</b>} : {msg.message}       
+                        {user?.id === msg.user_id ? (
                             <button className="btn btn-info ms-3 py-0"  onClick={()=>editMessage(msg.id, msg.message)}>Edit</button>
                         ):(
-                             <button className="btn btn-info ms-3 py-0" >Reply</button>
+                             <button className="btn btn-success ms-3 py-0" onClick={()=>handleReply(msg.id)} >Reply</button>
                         )}
                         <button className="btn btn-danger ms-3 py-0"  onClick={()=>deleteMessage(msg.id)}>Delete</button>
+
+
+                        {/* Edit */}
                        {editInfo === msg.id && (
                            <div className="mt-3">
                             <input value={newMessage} onChange={(e)=>setNewMessage(e.target.value)} />
@@ -147,10 +185,23 @@ export const Dashboard = () => {
                             </div>
                            </div>
                        )}
+
+
+                       {/* Reply */}
+                       {replyInfo === msg.id && (
+                           <div className="mt-3">
+                            <input  onChange={(e)=>setReplyMessage(e.target.value)} />
+                            <div >
+                                <button  className="btn alert alert-primary py-0 mt-2" onClick={()=>saveReplyMessage(msg.id, user.id, user.name, msg.message)}>Save</button>
+                            <button className="btn alert alert-danger py-0 mt-2 mx-2" onClick={()=>setReplyInfo(null)} >Cancel</button>
+                            </div>
+                           </div>
+                       )}
                     </div>
                 </div>
+                )
 
-        ))}
+            })}
         <div ref={bottom}></div>
             </div>
         <form onSubmit={(e)=>{
