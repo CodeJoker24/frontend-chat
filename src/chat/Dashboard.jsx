@@ -1,7 +1,6 @@
-import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
+import API from "./api";
 
 
 export const Dashboard = () => {
@@ -25,7 +24,7 @@ export const Dashboard = () => {
        e.preventDefault();
        setLoading(true);
         try{
-           const response = await axios.post("http://127.0.0.1:4000/api/messages/", {user_id:id, name, message});
+           const response = await API.post("/api/messages/", {user_id:id, name, message});
             // alert(response.data.message);
             setMessage("");
             fetchData();  
@@ -56,7 +55,7 @@ export const Dashboard = () => {
     const saveMessage = async(id)=>{
         //  setLoading(true);
         try{
-           const response = await axios.put(`http://127.0.0.1:4000/api/messages/${id}`, {newMessage});
+           const response = await API.put(`/api/messages/${id}`, {newMessage});
             // alert(response.data.message)
             fetchData();
             setEditInfo(null);
@@ -84,7 +83,7 @@ export const Dashboard = () => {
 
     const saveReplyMessage = async(id, user_id, name, reply_old_msg)=>{
         try{
-            const response = await axios.post(`http://127.0.0.1:4000/api/messages/reply/${id}`, {user_id, name, reply_old_msg, replyMessage} )
+            const response = await API.post(`/api/messages/reply/${id}`, {user_id, name, reply_old_msg, replyMessage} )
 
             fetchData();
             bottom.current?.scrollIntoView();
@@ -110,7 +109,7 @@ export const Dashboard = () => {
 
     const deleteMessage = async(id)=>{
         try{
-          const response = await axios.delete(`http://127.0.0.1:4000/api/messages/${id}`);
+          const response = await API.delete(`/api/messages/${id}`);
         //   alert(response.data.message);
         fetchData();
         
@@ -131,7 +130,7 @@ export const Dashboard = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         // const session = JSON.parse(localStorage.getItem('session'));
         // console.log(user)
-        const response = await axios.get("https://backend-chat-1-msok.onrender.com/api/messages/");
+        const response = await API.get("/api/messages/");
         // res.data(response)
         // console.log( res.data(response));
         console.log(response.data)

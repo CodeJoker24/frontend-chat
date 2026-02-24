@@ -1,7 +1,6 @@
 import { useState } from "react"
-import axios from "axios"
 import { Link, useNavigate } from "react-router-dom";
-
+import API from "./api";
 
 export const Login = () => {
     const [email, setEmail] = useState("");
@@ -23,7 +22,7 @@ export const Login = () => {
 
 
         try{
-            const response = await axios.post("https://backend-chat-1-msok.onrender.com/api/auth_routes/login", {email, password})
+            const response = await API.post("/api/auth_routes/login", {email, password})
         
             // console.log(response.data.user);
             localStorage.setItem("user", JSON.stringify(response.data.user))
