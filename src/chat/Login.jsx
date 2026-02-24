@@ -23,7 +23,7 @@ export const Login = () => {
 
 
         try{
-            const response = await axios.post("http://127.0.0.1:4000/api/auth_routes/login", {email, password})
+            const response = await axios.post("https://backend-chat-1-msok.onrender.com/api/auth_routes/login", {email, password})
         
             // console.log(response.data.user);
             localStorage.setItem("user", JSON.stringify(response.data.user))

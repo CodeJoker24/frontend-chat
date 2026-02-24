@@ -131,7 +131,7 @@ export const Dashboard = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         // const session = JSON.parse(localStorage.getItem('session'));
         // console.log(user)
-        const response = await axios.get("http://127.0.0.1:4000/api/messages/");
+        const response = await axios.get("https://backend-chat-1-msok.onrender.com/api/messages/");
         // res.data(response)
         // console.log( res.data(response));
         console.log(response.data)
